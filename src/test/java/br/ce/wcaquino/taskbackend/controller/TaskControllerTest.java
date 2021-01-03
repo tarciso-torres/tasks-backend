@@ -22,15 +22,23 @@ public class TaskControllerTest {
 	@InjectMocks
 	private TaskController controller;
 	
+	Task todo;
+	
+	public void makeTodo() {
+		todo.setTask("Descricao");
+		todo.setDueDate(LocalDate.now());
+	}
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		todo = new Task();
+		makeTodo();
 	}
 	
 	@Test
 	public void naoDeveSalvarTarefaSemDescricao() {
-		Task todo = new Task();
-		todo.setDueDate(LocalDate.now());
+		todo.setTask("");
 		try {
 			controller.save(todo);
 			Assert.fail("Não deveria chegar nesse ponto!");
@@ -42,8 +50,7 @@ public class TaskControllerTest {
 	
 	@Test
 	public void naoDeveSalvarTarefaSemData() {
-		Task todo = new Task();
-		todo.setTask("Descricao");
+		todo.setDueDate(null);
 		try {
 			controller.save(todo);
 			Assert.fail("Não deveria chegar nesse ponto!");
@@ -54,8 +61,6 @@ public class TaskControllerTest {
 	
 	@Test
 	public void naoDeveSalvarTarefaComDataPassada() {
-		Task todo = new Task();
-		todo.setTask("Descricao");
 		todo.setDueDate(LocalDate.of(2010, 01, 01));
 		try {
 			controller.save(todo);
@@ -67,9 +72,6 @@ public class TaskControllerTest {
 	
 	@Test
 	public void deveSalvarTarefaComSucesso() throws ValidationException {
-		Task todo = new Task();
-		todo.setTask("Descricao");
-		todo.setDueDate(LocalDate.now());
 		controller.save(todo);
 		Mockito.verify(taskRepo).save(todo);
 	}
