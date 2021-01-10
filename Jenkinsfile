@@ -36,9 +36,19 @@ pipeline {
         }
         stage ('API Test') {
             steps {
-                dir ('apit-test') {
+                dir ('api-test') {
                     git changelog: false, credentialsId: 'be7922d6-1178-4376-8d80-0ee06b87a034', url: 'https://github.com/tarciso-torres/tasks-api-test'
                     bat 'mvn test'
+                }
+            }
+        }
+        
+        stage ('Deploy Frontend') {
+            steps {
+                dir ('frontend') {
+                    git changelog: false, credentialsId: 'be7922d6-1178-4376-8d80-0ee06b87a034', url: 'https://github.com/tarciso-torres/tasks-frontend'
+                    bat 'mvn clean package'
+                    deploy adapters: [tomcat8(credentialsId: 'TomcatLogin', path: '', url: 'http://localhost:8001/')], contextPath: 'tasks', war: 'target/tasks.war'
                 }
             }
         }
